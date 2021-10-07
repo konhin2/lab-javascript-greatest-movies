@@ -1,5 +1,5 @@
 // Iteration 1: All directors? - Get the array of all directors.
-const movies = require('./data.js')
+
 // _Bonus_: It seems some of the directors had directed multiple movies so they will pop up multiple times in the array of directors.
 // How could you "clean" a bit this array and make it unified (without duplicates)?
 function getAllDirectors(movs) {
@@ -93,11 +93,49 @@ function turnHoursToMinutes(moviesArr) {
 function bestYearAvg(moviesArr) {
   if (moviesArr == '') {
     return null
+  } 
+  const sorted = moviesArr.sort((a, b) => {
+    return a.year - b.year
+  })
+  let year = 0
+  let sum = 0
+  let positions = 0
+  let results = [] 
+  for (let i = 0; i < sorted.length; i++){
+    if (sorted[i].year !== year) {
+      if (year === 0){
+        if (sorted.length === 1) {
+          results.push({
+            year: sorted[i].year,
+            rate: sorted[i].score
+          })
+        } else {
+          year = sorted[i].year
+          sum = sorted[i].score
+          positions = 1
+        }
+      } else {
+        results.push({
+          year: year,
+          rate: sum / positions
+        })
+        year = sorted[i].year
+        sum = sorted[i].score
+        positions = 1
+      }
+    } else {
+      positions++
+      sum += sorted[i].score
+    }
   }
-  const goldenYear = moviesArr.map((movie) => {})
-  if (goldenYear.length === 1) {
-    return `The best year was ${goldenYear[0].year} with an average score of ${goldenYear[0].score}`
-  }
+  const reduced = results.reduce((acc, movie) => {
+    if (acc.rate >= movie.rate ) {
+      return acc
+    } else {
+      return movie
+    }
+  },{rate:0, year: 0})
+  return `The best year was ${reduced.year} with an average score of ${reduced.rate}`
 }
 
 
